@@ -132,7 +132,7 @@ function updateUI() {
 function prestige() {
   if (stash >= 10000) {
     prestigePoints += 1;
-    stash = 0;
+    stash = 5;
     plantsOwned = 0;
     plantStrains = []; // Reset plant strains after prestige
     initGame(); // Reinitialize game with prestige boost
