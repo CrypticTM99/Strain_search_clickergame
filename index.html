@@ -1,4 +1,134 @@
-<!doctypehtml> Created by Crypticwisdom99 (CrypticTM) <html lang="en"> <head> <meta charset="UTF-8"> <title>Weed Strain Finder + Grow Clicker</title> <style>body{font-family:Arial,sans-serif;text-align:center;background-color:#f0fff0;padding:40px}button,input{padding:10px;font-size:16px;border-radius:8px;border:none;margin:5px}button{background-color:#4caf50;color:#fff;cursor:pointer}#clicker-section,#shop-section{margin-top:40px;padding:20px;background-color:#eaffea;border-radius:12px;display:inline-block;width:90%;max-width:600px}#plant{font-size:60px;margin:20px 0}#upgrade-buttons button{display:block;margin:10px auto;width:80%}#plants{display:flex;justify-content:space-around}.plant-pot{display:flex;flex-direction:column;align-items:center}.plant-status{margin-top:10px}</style> </head> <body> <h1>Strain Finder</h1> <p>Type a strain name or effect (e.g., "Sativa", "Sleep", "Blue Dream")</p> <input id="strainInput"placeholder="Search Leafly..."> <button onclick="searchStrain()">Search</button> <div id="clicker-section"> <h2>🌱 Pot Farm Clicker Game 🌿</h2> <div id="plants"> <div class="plant-pot"> <div id="plant1">🌱</div> <p>Plant 1 Stage: <span id="stageName1">Seed</span></p> <p class="plant-status">Stash: <span id="stash1">0</span> grams</p> <button onclick="growPlant(1)">🌞 Grow Plant 1</button> <button onclick="snipBud(1)"disabled id="snipBtn1">✂️ Snip Bud</button> </div> <div class="plant-pot"> <div id="plant2">🌱</div> <p>Plant 2 Stage: <span id="stageName2">Seed</span></p> <p class="plant-status">Stash: <span id="stash2">0</span> grams</p> <button onclick="growPlant(2)">🌞 Grow Plant 2</button> <button onclick="snipBud(2)"disabled id="snipBtn2">✂️ Snip Bud</button> </div> <div class="plant-pot"> <div id="plant3">🌱</div> <p>Plant 3 Stage: <span id="stageName3">Seed</span></p> <p class="plant-status">Stash: <span id="stash3">0</span> grams</p> <button onclick="growPlant(3)">🌞 Grow Plant 3</button> <button onclick="snipBud(3)"disabled id="snipBtn3">✂️ Snip Bud</button> </div> </div> <button onclick="snipAll()">✂️ Snip All Plants</button> </div> <div id="shop-section"> <h3>🛒 Upgrade Shop</h3> <p>Total Stash: <span id="totalStash">0</span> grams</p> <div id="upgrade-buttons"> <button onclick='buyUpgrade("fertilizer")'>💧 Fertilizer (+Faster Growth) - 25g</button> <button onclick='buyUpgrade("scissors")'>✂️ Trim Scissors (+1g per snip) - 50g</button> <button onclick='buyUpgrade("passiveGrowth")'>🌱 Passive Growth (+Speed) - 75g</button> <button onclick='buyUpgrade("speedBoost")'>⚡ Speed Boost (+2x Growth Speed) - 100g</button> <button onclick='buyUpgrade("doubleSnip")'>✂️ Double Snip (+2g per snip) - 150g</button> </div> <p id="upgradeMsg"></p> </div> <script> let stash = 0;
+<!DOCTYPE html>  <!-- Created by Crypticwisdom99 (CrypticTM) -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weed Strain Finder + Grow Clicker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0fff0;
+      padding: 40px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      margin: 5px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    #clicker-section, #shop-section {
+      margin-top: 40px;
+      padding: 20px;
+      background-color: #eaffea;
+      border-radius: 12px;
+      display: inline-block;
+      width: 90%;
+      max-width: 600px;
+    }
+    #plant {
+      font-size: 60px;
+      margin: 20px 0;
+    }
+    #upgrade-buttons button {
+      display: block;
+      margin: 10px auto;
+      width: 80%;
+    }
+    #plants {
+      display: flex;
+      justify-content: space-around;
+    }
+    .plant-pot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .plant-status {
+      margin-top: 10px;
+    }
+
+    /* Secret Button */
+    #secretBtn {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      opacity: 0.2;
+      background-color: #000;
+      color: #0f0;
+      border: none;
+      border-radius: 50%;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      z-index: 999;
+    }
+    #secretBtn:hover {
+      opacity: 1;
+      background-color: #111;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Strain Finder</h1>
+  <p>Type a strain name or effect (e.g., "Sativa", "Sleep", "Blue Dream")</p>
+  <input type="text" id="strainInput" placeholder="Search Leafly...">
+  <button onclick="searchStrain()">Search</button>
+
+  <div id="clicker-section">
+    <h2>🌱 Pot Farm Clicker Game 🌿</h2>
+    <div id="plants">
+      <div class="plant-pot">
+        <div id="plant1">🌱</div>
+        <p>Plant 1 Stage: <span id="stageName1">Seed</span></p>
+        <p class="plant-status">Stash: <span id="stash1">0</span> grams</p>
+        <button onclick="growPlant(1)">🌞 Grow Plant 1</button>
+        <button onclick="snipBud(1)" id="snipBtn1" disabled>✂️ Snip Bud</button>
+      </div>
+      <div class="plant-pot">
+        <div id="plant2">🌱</div>
+        <p>Plant 2 Stage: <span id="stageName2">Seed</span></p>
+        <p class="plant-status">Stash: <span id="stash2">0</span> grams</p>
+        <button onclick="growPlant(2)">🌞 Grow Plant 2</button>
+        <button onclick="snipBud(2)" id="snipBtn2" disabled>✂️ Snip Bud</button>
+      </div>
+      <div class="plant-pot">
+        <div id="plant3">🌱</div>
+        <p>Plant 3 Stage: <span id="stageName3">Seed</span></p>
+        <p class="plant-status">Stash: <span id="stash3">0</span> grams</p>
+        <button onclick="growPlant(3)">🌞 Grow Plant 3</button>
+        <button onclick="snipBud(3)" id="snipBtn3" disabled>✂️ Snip Bud</button>
+      </div>
+    </div>
+    <button onclick="snipAll()">✂️ Snip All Plants</button>
+  </div>
+
+  <div id="shop-section">
+    <h3>🛒 Upgrade Shop</h3>
+    <p>Total Stash: <span id="totalStash">0</span> grams</p>
+    <div id="upgrade-buttons">
+      <button onclick="buyUpgrade('fertilizer')">💧 Fertilizer (+Faster Growth) - 25g</button>
+      <button onclick="buyUpgrade('scissors')">✂️ Trim Scissors (+1g per snip) - 50g</button>
+      <button onclick="buyUpgrade('passiveGrowth')">🌱 Passive Growth (+Speed) - 75g</button>
+      <button onclick="buyUpgrade('speedBoost')">⚡ Speed Boost (+2x Growth Speed) - 100g</button>
+      <button onclick="buyUpgrade('doubleSnip')">✂️ Double Snip (+2g per snip) - 150g</button>
+    </div>
+    <p id="upgradeMsg"></p>
+  </div>
+
+  <!-- 🌿 Secret Garden Button -->
+  <button id="secretBtn" title="Secret Garden" onclick="window.open('secret_garden.html', '_blank')">
+    🌿
+  </button>
+
+<script>
+  let stash = 0;
   let plants = [
     { stage: 0, growth: 0, snipped: false },
     { stage: 0, growth: 0, snipped: false },
@@ -11,7 +141,6 @@
   const growthInterval = 5; // Passive growth in seconds
   const snipReward = 5; // grams per plant snipped
 
-  // Search for weed strains on Leafly
   function searchStrain() {
     const query = document.getElementById('strainInput').value.trim();
     if (!query) {
@@ -22,45 +151,41 @@
     window.open(searchUrl, '_blank');
   }
 
-  // Grow the plant (manual click)
   function growPlant(plantIndex) {
     const plant = plants[plantIndex - 1];
     if (plant.stage < stages.length - 1) {
       plant.growth += upgrades.speedBoost ? 2 : (upgrades.fertilizer ? 2 : 1);
       if (plant.growth >= growthNeeded) {
-        plant.stage = 3; // Full growth stage
+        plant.stage = 3;
         plant.growth = growthNeeded;
       }
     }
     updatePlant(plantIndex);
   }
 
-  // Snip (harvest) the plant when it's full-grown
   function snipBud(plantIndex) {
     const plant = plants[plantIndex - 1];
-    if (plant.stage === stages.length - 1) { // Ready to harvest
+    if (plant.stage === stages.length - 1) {
       stash += upgrades.doubleSnip ? snipReward * 2 : snipReward;
       plant.snipped = true;
-      plant.stage = 0; // Reset plant
+      plant.stage = 0;
       plant.growth = 0;
       updateAllPlants();
     }
   }
 
-  // Snip (harvest) all plants that are ready for harvest
   function snipAll() {
     plants.forEach((plant, index) => {
-      if (plant.stage === stages.length - 1) { // Ready to harvest
+      if (plant.stage === stages.length - 1) {
         stash += upgrades.doubleSnip ? snipReward * 2 : snipReward;
         plant.snipped = true;
-        plant.stage = 0; // Reset plant
+        plant.stage = 0;
         plant.growth = 0;
       }
     });
     updateAllPlants();
   }
 
-  // Update a single plant's display
   function updatePlant(plantIndex) {
     const plant = plants[plantIndex - 1];
     document.getElementById(`plant${plantIndex}`).textContent = stageVisuals[plant.stage];
@@ -70,18 +195,15 @@
     updateTotalStash();
   }
 
-  // Update all plants' displays
   function updateAllPlants() {
     plants.forEach((_, index) => updatePlant(index + 1));
   }
 
-  // Update total stash (currency)
   function updateTotalStash() {
     const totalStash = plants.reduce((sum, plant) => sum + (plant.snipped ? 0 : plant.growth), stash);
     document.getElementById('totalStash').textContent = totalStash;
   }
 
-  // Buy an upgrade from the shop
   function buyUpgrade(type) {
     if (type === 'fertilizer' && stash >= 25) {
       stash -= 25;
@@ -109,18 +231,22 @@
     updateTotalStash();
   }
 
-  // Passive growth: auto-grow plants that are not snipped
   setInterval(() => {
     if (upgrades.passiveGrowth) {
       plants.forEach((plant) => {
         if (plant.stage < stages.length - 1 && !plant.snipped) {
           plant.growth += 1;
           if (plant.growth >= growthNeeded) {
-            plant.stage = 3; // Full growth
+            plant.stage = 3;
             plant.growth = growthNeeded;
           }
         }
       });
       updateAllPlants();
     }
-  }, growthInterval * 1000); </script> 
+  }, growthInterval * 1000);
+</script>
+
+</body>
+</html>
+
