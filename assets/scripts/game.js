@@ -1,7 +1,8 @@
 // Game Variables
 let stash = 5; // Start with 5g stash
-let plantsOwned = 0;
-let prestigePoints = 0;
+let plantsOwned = 0; // Plants initially owned
+let prestigePoints = 0; // Prestige points starting out
+let prestigeLevel = 0; // Add Prestige Level
 let availablePlants = [];
 let plantStrains = [];
 
@@ -126,17 +127,48 @@ function updateUI() {
   } else {
     prestigeButton.disabled = true;  // Keep the button disabled
   }
+
+  // Show Prestige Level and the Prestige Shop if player has prestiged
+  if (prestigeLevel > 0) {
+    document.getElementById("prestigeLevel").style.display = "block";
+    document.getElementById("prestigeLevelValue").textContent = prestigeLevel;
+    document.getElementById("prestigeShop").style.display = "block";
+  }
 }
 
 // Prestige System Logic
 function prestige() {
   if (stash >= 10000) {
     prestigePoints += 1;
-    stash = 5;
-    plantsOwned = 0;
-    plantStrains = []; // Reset plant strains after prestige
-    initGame(); // Reinitialize game with prestige boost
+    prestigeLevel += 1;  // Increase Prestige Level
+    stash = 5;           // Reset stash after prestige
+    plantsOwned = 0;     // Reset plants owned
+    plantStrains = [];   // Reset plant strains after prestige
+    initGame();          // Reinitialize game with prestige boost
+    updateUI();          // Update the UI with the new prestige info
   }
 }
 
+// Buy Prestige Upgrade (Speed Boost or Stash Boost)
+function buyPrestigeUpgrade(upgradeType) {
+  if (upgradeType === 'speedBoost' && prestigePoints >= 1) {
+    // Apply speed boost upgrade (e.g., speed up plant growth)
+    plantStrains.forEach(plant => {
+      plant.growthRate += 0.5; // Example of a speed boost
+    });
+    prestigePoints -= 1;  // Spend one Prestige Point
+    alert("Speed Boost Purchased! Growth rate increased.");
+  } else if (upgradeType === 'stashBoost' && prestigePoints >= 2) {
+    // Apply stash boost upgrade (e.g., increase stash multiplier)
+    stash += 1000; // Give 1000 stash as a boost (just an example)
+    prestigePoints -= 2;  // Spend two Prestige Points
+    alert("Stash Boost Purchased! Gained 1000 stash.");
+  } else {
+    alert("Not enough Prestige Points or invalid upgrade!");
+  }
+
+  updateUI();  // Update UI after purchasing an upgrade
+}
+
+// Game Initialization
 initGame();
