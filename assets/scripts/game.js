@@ -118,11 +118,19 @@ function updateUI() {
     `;
     plantsSection.appendChild(plantElement);
   });
+
+  // Enable/Disable prestige button based on stash
+  const prestigeButton = document.getElementById("prestigeButton");
+  if (stash >= 1000) {
+    prestigeButton.disabled = false;  // Enable the button
+  } else {
+    prestigeButton.disabled = true;  // Keep the button disabled
+  }
 }
 
 // Prestige System Logic
 function prestige() {
-  if (stash >= 1000) {
+  if (stash >= 10000) {
     prestigePoints += 1;
     stash = 0;
     plantsOwned = 0;
