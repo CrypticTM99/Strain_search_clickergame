@@ -96,7 +96,7 @@ function idleGrowth() {
       }
     });
     updateUI();
-  }, 1250); // Update every 1.5 second
+  }, 1050); // Update every 1.5 second
 }
 
 // Update the UI
