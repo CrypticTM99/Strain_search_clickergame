@@ -195,5 +195,47 @@ function activateSnoopDoggEasterEgg() {
   }, 10000);
 }
 
+// Mobile Konami Buttons
+function addKonamiButtons() {
+  const mobileContainer = document.createElement("div");
+  mobileContainer.id = "konamiMobileButtons";
+  mobileContainer.style.position = "fixed";
+  mobileContainer.style.bottom = "10px";
+  mobileContainer.style.left = "10px";
+  mobileContainer.style.zIndex = "9999";
+  mobileContainer.style.display = "grid";
+  mobileContainer.style.gridTemplateColumns = "repeat(3, 40px)";
+  mobileContainer.style.gap = "5px";
+
+  const keys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "b", "a"];
+  keys.forEach(key => {
+    const btn = document.createElement("button");
+    btn.textContent = key.replace("Arrow", "").toUpperCase();
+    btn.style.fontSize = "10px";
+    btn.style.padding = "5px";
+    btn.onclick = () => handleMobileKonamiInput(key);
+    mobileContainer.appendChild(btn);
+  });
+
+  document.body.appendChild(mobileContainer);
+}
+
+function handleMobileKonamiInput(key) {
+  if (key === konamiCode[konamiIndex]) {
+    konamiIndex++;
+    if (konamiIndex === konamiCode.length) {
+      activateSnoopDoggEasterEgg();
+      konamiIndex = 0;
+    }
+  } else {
+    konamiIndex = 0;
+  }
+}
+
+window.onload = () => {
+  initGame();
+  addKonamiButtons();
+};
+
 // Start the game
 initGame();
