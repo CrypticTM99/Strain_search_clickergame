@@ -1,0 +1,281 @@
+<!DOCTYPE html> <!-- Created by Crypticwisdom99 (CrypticTM) -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weed Strain Finder + Grow Clicker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0fff0;
+      padding: 40px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      margin: 5px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    #clicker-section, #shop-section, #packaging-section {
+      margin-top: 40px;
+      padding: 20px;
+      background-color: #eaffea;
+      border-radius: 12px;
+      display: inline-block;
+      width: 90%;
+      max-width: 600px;
+    }
+    #plant {
+      font-size: 60px;
+      margin: 20px 0;
+    }
+    #upgrade-buttons button {
+      display: block;
+      margin: 10px auto;
+      width: 80%;
+    }
+    #plants {
+      display: flex;
+      justify-content: space-around;
+    }
+    .plant-pot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .plant-status {
+      margin-top: 10px;
+    }
+
+    .ready-glow {
+      animation: glow 1s infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 5px #00ff00;
+      }
+      to {
+        text-shadow: 0 0 15px #00ff00, 0 0 5px #00ff00;
+      }
+    }
+
+    #secretBtn {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      opacity: 0.2;
+      background-color: #000;
+      color: #0f0;
+      border: none;
+      border-radius: 50%;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      z-index: 999;
+    }
+    #secretBtn:hover {
+      opacity: 1;
+      background-color: #111;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Strain Finder</h1>
+  <p>Type a strain name or effect (e.g., "Sativa", "Sleep", "Blue Dream")</p>
+  <input type="text" id="strainInput" placeholder="Search Leafly...">
+  <button onclick="searchStrain()">Search</button>
+
+  <div id="clicker-section">
+    <h2>🌱 Pot Farm Clicker Game 🌿</h2>
+    <div id="plants">
+      <div class="plant-pot">
+        <div id="plant1">🌱</div>
+        <p>Plant 1 Stage: <span id="stageName1">Seed</span></p>
+        <p class="plant-status">Stash: <span id="stash1">0</span> grams</p>
+        <button onclick="growPlant(1)">🌞 Grow Plant 1</button>
+        <button onclick="snipBud(1)" id="snipBtn1" disabled>✂️ Snip Bud</button>
+      </div>
+      <div class="plant-pot">
+        <div id="plant2">🌱</div>
+        <p>Plant 2 Stage: <span id="stageName2">Seed</span></p>
+        <p class="plant-status">Stash: <span id="stash2">0</span> grams</p>
+        <button onclick="growPlant(2)">🌞 Grow Plant 2</button>
+        <button onclick="snipBud(2)" id="snipBtn2" disabled>✂️ Snip Bud</button>
+      </div>
+      <div class="plant-pot">
+        <div id="plant3">🌱</div>
+        <p>Plant 3 Stage: <span id="stageName3">Seed</span></p>
+        <p class="plant-status">Stash: <span id="stash3">0</span> grams</p>
+        <button onclick="growPlant(3)">🌞 Grow Plant 3</button>
+        <button onclick="snipBud(3)" id="snipBtn3" disabled>✂️ Snip Bud</button>
+      </div>
+    </div>
+    <button onclick="snipAll()">✂️ Snip All Plants</button>
+  </div>
+
+  <div id="shop-section">
+    <h3>🛒 Upgrade Shop</h3>
+    <p>Total Stash: <span id="totalStash">0</span> grams</p>
+    <div id="upgrade-buttons">
+      <button onclick="buyUpgrade('fertilizer')">💧 Fertilizer (+Faster Growth) - 25g</button>
+      <button onclick="buyUpgrade('scissors')">✂️ Trim Scissors (+1g per snip) - 50g</button>
+      <button onclick="buyUpgrade('passiveGrowth')">🌱 Passive Growth (+Speed) - 75g</button>
+      <button onclick="buyUpgrade('speedBoost')">⚡ Speed Boost (+2x Growth Speed) - 100g</button>
+      <button onclick="buyUpgrade('doubleSnip')">✂️ Double Snip (+2g per snip) - 150g</button>
+    </div>
+    <p id="upgradeMsg"></p>
+  </div>
+
+  <div id="packaging-section">
+    <h3>📦 Packaging Station</h3>
+    <p>Packages: <span id="packageCount">0</span></p>
+    <button onclick="packageWeed()">📦 Package Weed (200g)</button>
+  </div>
+
+  <button id="secretBtn" title="Secret Garden" onclick="window.open('secret_garden.html', '_blank')">🌿</button>
+
+<script>
+  let stash = 0;
+  let packages = 0;
+  let plants = [
+    { stage: 0, growth: 0, snipped: false },
+    { stage: 0, growth: 0, snipped: false },
+    { stage: 0, growth: 0, snipped: false }
+  ];
+  const stages = ['Seed', 'Sprout', 'Budding', 'Ready to Harvest'];
+  const stageVisuals = ['🌱', '🌿', '💐', '🌾'];
+  let upgrades = { fertilizer: false, scissors: false, passiveGrowth: false, speedBoost: false, doubleSnip: false };
+  const growthNeeded = 4;
+  const growthInterval = 5;
+  const snipReward = 5;
+
+  function searchStrain() {
+    const query = document.getElementById('strainInput').value.trim();
+    if (!query) {
+      alert("Please enter a strain or effect.");
+      return;
+    }
+    const searchUrl = `https://www.leafly.com/search?q=${encodeURIComponent(query)}`;
+    window.open(searchUrl, '_blank');
+  }
+
+  function growPlant(plantIndex) {
+    const plant = plants[plantIndex - 1];
+    if (plant.stage < stages.length - 1) {
+      plant.growth += upgrades.speedBoost ? 2 : (upgrades.fertilizer ? 2 : 1);
+      if (plant.growth >= growthNeeded) {
+        plant.stage = 3;
+        plant.growth = growthNeeded;
+      }
+    }
+    updatePlant(plantIndex);
+  }
+
+  function snipBud(plantIndex) {
+    const plant = plants[plantIndex - 1];
+    if (plant.stage === 3) {
+      let reward = upgrades.doubleSnip ? snipReward * 2 : snipReward;
+      stash += reward;
+      plant.snipped = true;
+      plant.stage = 0;
+      plant.growth = 0;
+      updateAllPlants();
+    }
+  }
+
+  function snipAll() {
+    plants.forEach((plant, index) => {
+      if (plant.stage === 3) {
+        stash += upgrades.doubleSnip ? snipReward * 2 : snipReward;
+        plant.snipped = true;
+        plant.stage = 0;
+        plant.growth = 0;
+      }
+    });
+    updateAllPlants();
+  }
+
+  function updatePlant(plantIndex) {
+    const plant = plants[plantIndex - 1];
+    const el = document.getElementById(`plant${plantIndex}`);
+    el.textContent = stageVisuals[plant.stage];
+    el.classList.toggle("ready-glow", plant.stage === 3);
+    document.getElementById(`stageName${plantIndex}`).textContent = stages[plant.stage];
+    document.getElementById(`stash${plantIndex}`).textContent = plant.snipped ? 0 : plant.growth;
+    document.getElementById(`snipBtn${plantIndex}`).disabled = plant.stage !== 3;
+    updateTotalStash();
+  }
+
+  function updateAllPlants() {
+    plants.forEach((_, index) => updatePlant(index + 1));
+  }
+
+  function updateTotalStash() {
+    const totalStash = stash;
+    document.getElementById('totalStash').textContent = totalStash;
+  }
+
+  function buyUpgrade(type) {
+    if (type === 'fertilizer' && stash >= 25 && !upgrades.fertilizer) {
+      stash -= 25;
+      upgrades.fertilizer = true;
+      document.getElementById('upgradeMsg').textContent = "💧 Fertilizer active!";
+    } else if (type === 'scissors' && stash >= 50 && !upgrades.scissors) {
+      stash -= 50;
+      upgrades.scissors = true;
+      document.getElementById('upgradeMsg').textContent = "✂️ Trim Scissors active!";
+    } else if (type === 'passiveGrowth' && stash >= 75 && !upgrades.passiveGrowth) {
+      stash -= 75;
+      upgrades.passiveGrowth = true;
+      document.getElementById('upgradeMsg').textContent = "🌱 Passive Growth Speed active!";
+    } else if (type === 'speedBoost' && stash >= 100 && !upgrades.speedBoost) {
+      stash -= 100;
+      upgrades.speedBoost = true;
+      document.getElementById('upgradeMsg').textContent = "⚡ Speed Boost active!";
+    } else if (type === 'doubleSnip' && stash >= 150 && !upgrades.doubleSnip) {
+      stash -= 150;
+      upgrades.doubleSnip = true;
+      document.getElementById('upgradeMsg').textContent = "✂️ Double Snip active!";
+    } else {
+      document.getElementById('upgradeMsg').textContent = "Not enough stash or already owned.";
+    }
+    updateTotalStash();
+  }
+
+  function packageWeed() {
+    if (stash >= 200) {
+      stash -= 200;
+      packages += 1;
+      document.getElementById('packageCount').textContent = packages;
+      updateTotalStash();
+    } else {
+      alert("You need at least 200 grams to package!");
+    }
+  }
+
+  setInterval(() => {
+    if (upgrades.passiveGrowth) {
+      plants.forEach((plant, index) => {
+        if (plant.stage < 3 && !plant.snipped) {
+          plant.growth += 1;
+          if (plant.growth >= growthNeeded) {
+            plant.stage = 3;
+            plant.growth = growthNeeded;
+          }
+        }
+      });
+      updateAllPlants();
+    }
+  }, growthInterval * 1000);
+</script>
+
+</body>
+</html>
